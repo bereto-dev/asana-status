@@ -4,7 +4,7 @@ class AboutWindow: NSWindow {
 
     convenience init() {
         self.init(
-            contentRect: NSRect(x: 0, y: 0, width: 380, height: 220),
+            contentRect: NSRect(x: 0, y: 0, width: 380, height: 300),
             styleMask:   [.titled, .closable],
             backing:     .buffered,
             defer:       false
@@ -31,10 +31,16 @@ class AboutWindow: NSWindow {
         originBody.font = .systemFont(ofSize: 12)
         originBody.textColor = .secondaryLabelColor
 
+        let supportHeader = sectionHeader(L.supportHeader)
+        let coffeeBtn = linkButton(title: "☕  Buy Me a Coffee", url: "https://buymeacoffee.com/bereto")
+        let devBtn    = linkButton(title: "🌐  devteam.partners", url: "https://devteam.partners/about-us")
+
         let stack = NSStackView(views: [
             appName, appSub,
             div(),
             originHeader, originBody,
+            div(),
+            supportHeader, coffeeBtn, devBtn,
         ])
         stack.orientation = .vertical
         stack.alignment   = .leading
@@ -69,5 +75,21 @@ class AboutWindow: NSWindow {
         v.boxType = .separator
         v.widthAnchor.constraint(equalToConstant: 332).isActive = true
         return v
+    }
+
+    private func linkButton(title: String, url: String) -> NSButton {
+        let b = NSButton(title: title, target: self, action: #selector(openLink(_:)))
+        b.bezelStyle  = .inline
+        b.isBordered  = false
+        b.font        = .systemFont(ofSize: 12)
+        b.contentTintColor = .linkColor
+        b.identifier  = NSUserInterfaceItemIdentifier(url)
+        return b
+    }
+
+    @objc private func openLink(_ sender: NSButton) {
+        guard let urlStr = sender.identifier?.rawValue,
+              let url = URL(string: urlStr) else { return }
+        NSWorkspace.shared.open(url)
     }
 }

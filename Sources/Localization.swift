@@ -111,4 +111,5 @@ enum L {
         es ? "Construido por Roberto Pacheco para ver de un vistazo si va al día con sus horas de la semana, sin entrar a Asana."
            : "Built by Roberto Pacheco to see at a glance whether he's on track with his hours for the week, without opening Asana."
     }
+    static var supportHeader: String { es ? "Soporte" : "Support" }
 }
