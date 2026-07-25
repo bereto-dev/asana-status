@@ -7,7 +7,7 @@ SOURCES = $(wildcard Sources/*.swift)
 
 all: $(BUNDLE)
 
-$(BUNDLE): $(SOURCES) Resources/Info.plist
+$(BUNDLE): $(SOURCES) Resources/Info.plist Resources/AppIcon.icns
 	@mkdir -p $(BUNDLE)/Contents/MacOS
 	@mkdir -p $(BUNDLE)/Contents/Resources
 	swiftc $(SOURCES) \
@@ -16,6 +16,7 @@ $(BUNDLE): $(SOURCES) Resources/Info.plist
 		-framework Security \
 		-o $(EXEC)
 	@cp Resources/Info.plist $(BUNDLE)/Contents/Info.plist
+	@cp Resources/AppIcon.icns $(BUNDLE)/Contents/Resources/AppIcon.icns
 	@echo "✓ Built $(BUNDLE)"
 
 run: all
