@@ -10,6 +10,8 @@ A lightweight macOS menu bar app that shows how many hours you've logged in Asan
 - Breakdown of tasks with time logged this week, most recent first
 - Manual refresh button
 
+![AsanaStatus popup showing 37.8h of 40h goal, 2.2h behind pace, and a breakdown of tasks](screenshot.jpg)
+
 ## How it works
 
 Asana's own per-user "time logged" total includes every task you tracked time on — even tasks assigned to someone else, or to no one. A simple "my tasks" query misses those. AsanaStatus instead combines Asana's Advanced Search API (`assignee.any` **and** `followers.any`, since Asana auto-follows you on tasks you log time on) with the Time Tracking API, filtering entries by exact date and by you as the author. This matches Asana's own weekly total far more closely than a naive assignee-only query.
