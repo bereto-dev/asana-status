@@ -65,6 +65,14 @@ AsanaStatus sends a macOS notification the moment you hit your weekly hours goal
 
 Built by Roberto Pacheco to see at a glance whether he's on track with his hours for the week, without opening Asana.
 
+## Support
+
+If you find AsanaStatus useful, you can buy me a coffee ☕
+
+[![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-bereto-FFDD00?style=flat&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/bereto)
+
+Built by [devteam.partners](https://devteam.partners/about-us) 🌐
+
 ---
 
 Built with Swift + AppKit. No external dependencies.
