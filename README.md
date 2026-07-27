@@ -1,6 +1,10 @@
 # AsanaStatus
 
+![Version](https://img.shields.io/badge/version-1.1.0-blue)
+
 A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed.
+
+> Running an older version? Compare the number above to the one under **About AsanaStatus** in the app (right-click the menu bar icon), then re-download `AsanaStatus.app` from this repo if you're behind.
 
 **Menu bar:** `⏱ 22.4/40h`
 
