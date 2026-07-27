@@ -22,6 +22,10 @@ class AboutWindow: NSWindow {
         let appName = NSTextField(labelWithString: "AsanaStatus")
         appName.font = .boldSystemFont(ofSize: 20)
 
+        let versionLabel = NSTextField(labelWithString: L.versionLabel(Self.appVersionString))
+        versionLabel.font = .systemFont(ofSize: 11)
+        versionLabel.textColor = .tertiaryLabelColor
+
         let appSub = NSTextField(wrappingLabelWithString: L.aboutSubtitle)
         appSub.font = .systemFont(ofSize: 12)
         appSub.textColor = .secondaryLabelColor
@@ -36,7 +40,7 @@ class AboutWindow: NSWindow {
         let devBtn    = linkButton(title: "🌐  devteam.partners", url: "https://devteam.partners/about-us")
 
         let stack = NSStackView(views: [
-            appName, appSub,
+            appName, versionLabel, appSub,
             div(),
             originHeader, originBody,
             div(),
@@ -47,6 +51,7 @@ class AboutWindow: NSWindow {
         stack.spacing     = 8
         stack.edgeInsets  = NSEdgeInsets(top: 24, left: 24, bottom: 24, right: 24)
         stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.setCustomSpacing(2, after: appName)
 
         root.addSubview(stack)
         NSLayoutConstraint.activate([
@@ -61,6 +66,13 @@ class AboutWindow: NSWindow {
         root.layoutSubtreeIfNeeded()
         let h = stack.fittingSize.height
         setContentSize(NSSize(width: 380, height: h))
+    }
+
+    private static var appVersionString: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        return "\(version) (\(build))"
     }
 
     private func sectionHeader(_ text: String) -> NSTextField {

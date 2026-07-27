@@ -117,4 +117,5 @@ enum L {
            : "Built by Roberto Pacheco to see at a glance whether he's on track with his hours for the week, without opening Asana."
     }
     static var supportHeader: String { es ? "Soporte" : "Support" }
+    static func versionLabel(_ version: String) -> String { es ? "Versión \(version)" : "Version \(version)" }
 }
