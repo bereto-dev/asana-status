@@ -99,6 +99,10 @@ class StatusBarController: NSObject {
         about.target = self
         menu.addItem(about)
 
+        let checkForUpdates = NSMenuItem(title: L.checkForUpdatesMenu, action: #selector(openRepo), keyEquivalent: "")
+        checkForUpdates.target = self
+        menu.addItem(checkForUpdates)
+
         menu.addItem(NSMenuItem.separator())
         menu.addItem(NSMenuItem(title: L.quitMenu, action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q"))
         statusItem.menu = menu
@@ -108,6 +112,10 @@ class StatusBarController: NSObject {
 
     @objc private func manualRefresh() {
         refresh()
+    }
+
+    @objc private func openRepo() {
+        NSWorkspace.shared.open(URL(string: "https://github.com/bereto-dev/asana-status")!)
     }
 
     @objc private func showAbout() {
