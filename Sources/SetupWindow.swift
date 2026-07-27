@@ -9,6 +9,7 @@ class SetupWindow: NSWindow {
     private let workspaceField  = NSTextField()
     private let goalField       = NSTextField()
     private let weekdayPopup    = NSPopUpButton()
+    private let workDaysPopup   = NSPopUpButton()
     private let languagePopup   = NSPopUpButton()
     private let statusLabel     = NSTextField(wrappingLabelWithString: "")
     private let saveBtn         = NSButton()
@@ -19,6 +20,7 @@ class SetupWindow: NSWindow {
     private let workspaceLabelField = NSTextField(labelWithString: "")
     private let goalLabelField   = NSTextField(labelWithString: "")
     private let weekStartLabelField = NSTextField(labelWithString: "")
+    private let workDaysLabelField  = NSTextField(labelWithString: "")
     private let languageLabelField  = NSTextField(labelWithString: "")
 
     private var stack: NSStackView!
@@ -52,11 +54,12 @@ class SetupWindow: NSWindow {
         workspaceField.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
         goalField.font = .systemFont(ofSize: 12)
 
-        for f in [tokenLabelField, workspaceLabelField, goalLabelField, weekStartLabelField, languageLabelField] {
+        for f in [tokenLabelField, workspaceLabelField, goalLabelField, weekStartLabelField, workDaysLabelField, languageLabelField] {
             f.font = .systemFont(ofSize: 13)
         }
 
         weekdayPopup.target = self
+        workDaysPopup.target = self
 
         languagePopup.removeAllItems()
         languagePopup.addItem(withTitle: AppLanguage.en.displayName)
@@ -97,6 +100,7 @@ class SetupWindow: NSWindow {
             workspaceLabelField, workspaceField,
             goalLabelField, goalField,
             weekStartLabelField, weekdayPopup,
+            workDaysLabelField, workDaysPopup,
             languageLabelField, languagePopup,
             statusLabel, saveBtn,
         ])
@@ -110,6 +114,7 @@ class SetupWindow: NSWindow {
             f.widthAnchor.constraint(equalToConstant: FIELD_W).isActive = true
         }
         weekdayPopup.widthAnchor.constraint(equalToConstant: 160).isActive = true
+        workDaysPopup.widthAnchor.constraint(equalToConstant: 160).isActive = true
         languagePopup.widthAnchor.constraint(equalToConstant: 160).isActive = true
         subLabel.widthAnchor.constraint(equalToConstant: FIELD_W).isActive = true
         statusLabel.widthAnchor.constraint(equalToConstant: FIELD_W).isActive = true
@@ -125,13 +130,15 @@ class SetupWindow: NSWindow {
             stack.bottomAnchor.constraint(lessThanOrEqualTo: v.bottomAnchor),
         ])
 
-        applyTexts(selectingWeekday: CredentialsManager.load()?.firstWeekday ?? 2)
+        let creds = CredentialsManager.load()
+        applyTexts(selectingWeekday: creds?.firstWeekday ?? 2, selectingWorkDays: creds?.workDaysPerWeek ?? 5)
     }
 
-    /// (Re)applies all localized text. Rebuilds the weekday popup items (titles change per
-    /// language) while preserving the current selection.
-    private func applyTexts(selectingWeekday: Int? = nil) {
+    /// (Re)applies all localized text. Rebuilds the weekday and work-days popups (titles change
+    /// per language) while preserving the current selection.
+    private func applyTexts(selectingWeekday: Int? = nil, selectingWorkDays: Int? = nil) {
         let weekdayToKeep = selectingWeekday ?? weekdayPopup.selectedItem?.tag ?? 2
+        let workDaysToKeep = selectingWorkDays ?? workDaysPopup.selectedItem?.tag ?? 5
 
         title = L.setupWindowTitle
         subLabel.stringValue = L.setupSubtitle
@@ -142,6 +149,7 @@ class SetupWindow: NSWindow {
         workspaceLabelField.stringValue = L.workspaceLabel
         goalLabelField.stringValue = L.goalLabel
         weekStartLabelField.stringValue = L.weekStartLabel
+        workDaysLabelField.stringValue = L.workDaysLabel
         languageLabelField.stringValue = L.languageLabel
         saveBtn.title = L.saveButton
         helpBtn.title = L.generateTokenLink
@@ -153,6 +161,13 @@ class SetupWindow: NSWindow {
             weekdayPopup.lastItem?.tag = i + 1 // Calendar.firstWeekday: 1 = Sunday ... 7 = Saturday
         }
         weekdayPopup.selectItem(withTag: weekdayToKeep)
+
+        workDaysPopup.removeAllItems()
+        for n in 1...7 {
+            workDaysPopup.addItem(withTitle: L.dayCount(n))
+            workDaysPopup.lastItem?.tag = n
+        }
+        workDaysPopup.selectItem(withTag: workDaysToKeep)
 
         languagePopup.selectItem(withTag: AppLanguage.current == .es ? 1 : 0)
 
@@ -176,6 +191,7 @@ class SetupWindow: NSWindow {
         let manualWorkspace = workspaceField.stringValue.trimmingCharacters(in: .whitespaces)
         let goalText = goalField.stringValue.trimmingCharacters(in: .whitespaces)
         let firstWeekday = weekdayPopup.selectedItem?.tag ?? 2
+        let workDaysPerWeek = workDaysPopup.selectedItem?.tag ?? 5
 
         guard !token.isEmpty else {
             statusLabel.stringValue = L.tokenRequiredError
@@ -221,7 +237,8 @@ class SetupWindow: NSWindow {
                     workspaceGid: workspace.gid,
                     workspaceName: workspace.name,
                     weeklyGoalHours: goal,
-                    firstWeekday: firstWeekday
+                    firstWeekday: firstWeekday,
+                    workDaysPerWeek: workDaysPerWeek
                 )
                 CredentialsManager.save(creds)
                 await MainActor.run {

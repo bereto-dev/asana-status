@@ -23,13 +23,15 @@ class WeeklyTimeService {
     private let workspaceGid: String
     private let goalHours: Double
     private let firstWeekday: Int
+    private let workDaysPerWeek: Int
 
-    init(token: String, userGid: String, workspaceGid: String, goalHours: Double, firstWeekday: Int) {
+    init(token: String, userGid: String, workspaceGid: String, goalHours: Double, firstWeekday: Int, workDaysPerWeek: Int) {
         self.api = AsanaAPI(token: token)
         self.userGid = userGid
         self.workspaceGid = workspaceGid
         self.goalHours = goalHours
         self.firstWeekday = firstWeekday
+        self.workDaysPerWeek = workDaysPerWeek
     }
 
     func fetchWeeklySummary() async throws -> WeeklySummary {
@@ -69,8 +71,8 @@ class WeeklyTimeService {
             .map { TaskMinutes(name: $0.name, minutes: $0.minutes, lastLoggedAt: $0.lastLoggedAt) }
 
         let goalMinutes = Int(goalHours * 60)
-        let elapsed = WeekCalculator.elapsedWorkdays(firstWeekday: firstWeekday, from: weekStart)
-        let expectedMinutesSoFar = Int(Double(goalMinutes) * Double(elapsed) / 5.0)
+        let elapsed = WeekCalculator.elapsedWorkdays(firstWeekday: firstWeekday, totalWorkdays: workDaysPerWeek, from: weekStart)
+        let expectedMinutesSoFar = Int(Double(goalMinutes) * Double(elapsed) / Double(workDaysPerWeek))
 
         return WeeklySummary(
             totalMinutes: totalMinutes,

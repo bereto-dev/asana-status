@@ -49,6 +49,11 @@ enum L {
     static var goalLabel: String { es ? "Meta semanal (horas)" : "Weekly goal (hours)" }
     static var goalPlaceholder: String { es ? "Meta semanal en horas (ej. 40)" : "Weekly goal in hours (e.g. 40)" }
     static var weekStartLabel: String { es ? "La semana se reinicia el" : "Week resets on" }
+    static var workDaysLabel: String { es ? "Días laborales por semana" : "Work days per week" }
+    static func dayCount(_ n: Int) -> String {
+        if es { return n == 1 ? "1 día" : "\(n) días" }
+        return n == 1 ? "1 day" : "\(n) days"
+    }
     static var languageLabel: String { es ? "Idioma" : "Language" }
     static var saveButton: String { es ? "Guardar y Conectar" : "Save & Connect" }
     static var generateTokenLink: String { es ? "Generar un token →" : "Generate a token →" }

@@ -124,7 +124,8 @@ class StatusBarController: NSObject {
             userGid: creds.userGid,
             workspaceGid: creds.workspaceGid,
             goalHours: creds.weeklyGoalHours,
-            firstWeekday: creds.firstWeekday
+            firstWeekday: creds.firstWeekday,
+            workDaysPerWeek: creds.workDaysPerWeek
         )
         goalHours = creds.weeklyGoalHours
         notifiedGoalThisWeek = false

@@ -47,6 +47,7 @@ Right-click the menu bar icon → **Settings…**
 - **Workspace GID** — optional, auto-detected if your account has only one workspace
 - **Weekly goal (hours)** — default 40
 - **Week resets on** — which day starts your work week
+- **Work days per week** — default 5, used to figure out your expected pace (e.g. set it to 4 or 6 if your goal isn't spread Monday to Friday)
 - **Language** — English (default) or Español
 
 ## First launch security

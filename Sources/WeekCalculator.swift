@@ -27,11 +27,11 @@ enum WeekCalculator {
         return f.string(from: date)
     }
 
-    /// Days elapsed so far this week (including today), capped at 5 — used as a proxy for
-    /// "work days" regardless of which day the week starts on.
-    static func elapsedWorkdays(firstWeekday: Int, from weekStart: Date, to now: Date = Date()) -> Int {
+    /// Days elapsed so far this week (including today), capped at `totalWorkdays` — used as a
+    /// proxy for "work days" regardless of which day the week starts on.
+    static func elapsedWorkdays(firstWeekday: Int, totalWorkdays: Int, from weekStart: Date, to now: Date = Date()) -> Int {
         let cal = calendar(firstWeekday: firstWeekday)
         let days = cal.dateComponents([.day], from: weekStart, to: now).day ?? 0
-        return min(max(days, 0) + 1, 5)
+        return min(max(days, 0) + 1, totalWorkdays)
     }
 }

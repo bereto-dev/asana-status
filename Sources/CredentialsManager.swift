@@ -9,6 +9,8 @@ struct Credentials {
     let weeklyGoalHours: Double
     /// Calendar.firstWeekday convention: 1 = Sunday … 7 = Saturday. Default 2 = Monday.
     let firstWeekday: Int
+    /// How many days per week the goal is spread over, for the pace calculation. Default 5.
+    let workDaysPerWeek: Int
 }
 
 enum CredentialsManager {
@@ -23,6 +25,7 @@ enum CredentialsManager {
         suite.set(c.workspaceName, forKey: "workspaceName")
         suite.set(c.weeklyGoalHours, forKey: "weeklyGoalHours")
         suite.set(c.firstWeekday, forKey: "firstWeekday")
+        suite.set(c.workDaysPerWeek, forKey: "workDaysPerWeek")
     }
 
     static func load() -> Credentials? {
@@ -33,6 +36,7 @@ enum CredentialsManager {
         else { return nil }
         let goal = suite.double(forKey: "weeklyGoalHours")
         let firstWeekday = suite.integer(forKey: "firstWeekday")
+        let workDaysPerWeek = suite.integer(forKey: "workDaysPerWeek")
         return Credentials(
             token: token,
             userGid: userGid,
@@ -40,7 +44,8 @@ enum CredentialsManager {
             workspaceGid: workspaceGid,
             workspaceName: suite.string(forKey: "workspaceName") ?? "",
             weeklyGoalHours: goal > 0 ? goal : 40,
-            firstWeekday: (1...7).contains(firstWeekday) ? firstWeekday : 2
+            firstWeekday: (1...7).contains(firstWeekday) ? firstWeekday : 2,
+            workDaysPerWeek: (1...7).contains(workDaysPerWeek) ? workDaysPerWeek : 5
         )
     }
 
@@ -52,5 +57,6 @@ enum CredentialsManager {
         suite.removeObject(forKey: "workspaceName")
         suite.removeObject(forKey: "weeklyGoalHours")
         suite.removeObject(forKey: "firstWeekday")
+        suite.removeObject(forKey: "workDaysPerWeek")
     }
 }
