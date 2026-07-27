@@ -76,14 +76,14 @@ enum L {
     static func ofGoal(_ hours: Double, percent: Int) -> String {
         es ? String(format: "de %.0fh (%d%%)", hours, percent) : String(format: "of %.0fh (%d%%)", hours, percent)
     }
-    static var rightOnTrack: String { es ? "Justo a tiempo con tu objetivo semanal." : "Right on track with your weekly goal." }
+    static var rightOnTrack: String { es ? "Justo a tiempo con tu ritmo." : "Right on pace." }
     static func aheadOfGoal(_ hours: Double) -> String {
-        es ? String(format: "%.1fh por delante del objetivo semanal.", hours)
-           : String(format: "%.1fh ahead of your weekly goal.", hours)
+        es ? String(format: "%.1fh por delante de tu ritmo.", hours)
+           : String(format: "%.1fh ahead of pace.", hours)
     }
     static func behindGoal(_ hours: Double) -> String {
-        es ? String(format: "%.1fh detrás del objetivo semanal.", hours)
-           : String(format: "%.1fh behind your weekly goal.", hours)
+        es ? String(format: "%.1fh detrás de tu ritmo.", hours)
+           : String(format: "%.1fh behind pace.", hours)
     }
     static var tasksHeader: String { es ? "TAREAS CON TIEMPO ESTA SEMANA" : "TASKS WITH TIME THIS WEEK" }
     static var noTimeLoggedYet: String { es ? "Sin tiempo registrado aún" : "No time logged yet" }
