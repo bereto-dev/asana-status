@@ -60,7 +60,7 @@ class AsanaAPI {
 
     init(token: String) { self.token = token }
 
-    private func get(_ path: String, query: [String: String] = [:]) async throws -> Data {
+    private func get(_ path: String, query: [String: String] = [:], retriesLeft: Int = 4) async throws -> Data {
         var comps = URLComponents(string: base + path)!
         if !query.isEmpty {
             comps.queryItems = query.map { URLQueryItem(name: $0.key, value: $0.value) }
@@ -70,6 +70,11 @@ class AsanaAPI {
         let (data, resp) = try await URLSession.shared.data(for: req)
         guard let http = resp as? HTTPURLResponse else { throw AsanaAPIError.decoding }
         if http.statusCode == 401 { throw AsanaAPIError.invalidToken }
+        if http.statusCode == 429, retriesLeft > 0 {
+            let retryAfter = http.value(forHTTPHeaderField: "Retry-After").flatMap(Double.init) ?? 1.5
+            try await Task.sleep(nanoseconds: UInt64(retryAfter * 1_000_000_000))
+            return try await get(path, query: query, retriesLeft: retriesLeft - 1)
+        }
         if !(200...299).contains(http.statusCode) {
             let msg = ((try? JSONSerialization.jsonObject(with: data)) as? [String: Any])
                 .flatMap { ($0["errors"] as? [[String: Any]])?.first?["message"] as? String } ?? "Unknown error"

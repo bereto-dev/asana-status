@@ -44,24 +44,30 @@ class WeeklyTimeService {
         var perTaskMinutes: [(name: String, minutes: Int, lastLoggedAt: Date?)] = []
         var totalMinutes = 0
 
-        try await withThrowingTaskGroup(of: (String, Int, Date?).self) { group in
-            for task in tasks {
-                group.addTask { [api, userGid] in
-                    let entries = try await api.fetchTimeEntries(taskGid: task.gid)
-                    let mine = entries
-                        .filter { $0.createdByGid == userGid }
-                        .filter { entry in
-                            guard let d = entry.entered_on else { return false }
-                            return d >= weekStartDateOnly
-                        }
-                    let minutes = mine.reduce(0) { $0 + ($1.duration_minutes ?? 0) }
-                    let lastLoggedAt = mine.compactMap { $0.createdAtDate }.max()
-                    return (task.name, minutes, lastLoggedAt)
+        // Asana rejects large bursts of simultaneous requests ("too many requests at the same
+        // time"), so time entries are fetched in small concurrent batches instead of all at once.
+        let batchSize = 8
+        for batchStart in stride(from: 0, to: tasks.count, by: batchSize) {
+            let batch = tasks[batchStart..<min(batchStart + batchSize, tasks.count)]
+            try await withThrowingTaskGroup(of: (String, Int, Date?).self) { group in
+                for task in batch {
+                    group.addTask { [api, userGid] in
+                        let entries = try await api.fetchTimeEntries(taskGid: task.gid)
+                        let mine = entries
+                            .filter { $0.createdByGid == userGid }
+                            .filter { entry in
+                                guard let d = entry.entered_on else { return false }
+                                return d >= weekStartDateOnly
+                            }
+                        let minutes = mine.reduce(0) { $0 + ($1.duration_minutes ?? 0) }
+                        let lastLoggedAt = mine.compactMap { $0.createdAtDate }.max()
+                        return (task.name, minutes, lastLoggedAt)
+                    }
                 }
-            }
-            for try await (name, minutes, lastLoggedAt) in group where minutes > 0 {
-                perTaskMinutes.append((name, minutes, lastLoggedAt))
-                totalMinutes += minutes
+                for try await (name, minutes, lastLoggedAt) in group where minutes > 0 {
+                    perTaskMinutes.append((name, minutes, lastLoggedAt))
+                    totalMinutes += minutes
+                }
             }
         }
 
