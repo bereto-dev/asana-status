@@ -1,4 +1,4 @@
-# AsanaStatus (v1.1.1)
+# AsanaStatus (v1.1.2)
 
 A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed.
 

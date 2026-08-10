@@ -71,7 +71,12 @@ class StatusBarController: NSObject {
         let btnFrame = btn.window!.convertToScreen(btn.frame)
         let panelW: CGFloat = 260
         var x = btnFrame.midX - panelW / 2
-        let y = btnFrame.minY - 8
+        // PopupPanel insets its visible card 6pt from the panel's own top edge, so we push the
+        // panel's frame up by that same amount to keep the *visible* gap to the menu bar at
+        // just `visualGap`, instead of visualGap + 6.
+        let visualGap: CGFloat = 4
+        let cardTopInset: CGFloat = 6
+        let y = btnFrame.minY - visualGap + cardTopInset
 
         x = min(x, screen.visibleFrame.maxX - panelW - 8)
         x = max(x, screen.visibleFrame.minX + 8)
