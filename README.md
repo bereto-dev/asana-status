@@ -13,7 +13,7 @@ A lightweight macOS menu bar app that shows how many hours you've logged in Asan
 - Breakdown of tasks with time logged, most recent first
 - Manual refresh button
 
-![AsanaStatus popup showing 37.8h of 40h goal, 2.2h behind pace, and a breakdown of tasks](screenshot.jpg)
+![AsanaStatus menu bar icon and popup showing 18.6h of 40h goal, the This Week / Today toggle, and a breakdown of tasks](asana_status_cover.jpg)
 
 ## How it works
 
