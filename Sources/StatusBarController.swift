@@ -13,6 +13,8 @@ class StatusBarController: NSObject {
     private var lastSummaries: PeriodSummaries?
     private var lastErrorMessage: String?
     private var selectedPeriod: StatsPeriod = .week
+    private var outsideClickMonitor: Any?
+    private var localClickMonitor: Any?
 
     override init() {
         super.init()
@@ -35,6 +37,12 @@ class StatusBarController: NSObject {
         NotificationCenter.default.addObserver(forName: .appLanguageChanged, object: nil, queue: .main) { [weak self] _ in
             self?.aboutWin = nil
             self?.renderCachedStateIntoPopup()
+        }
+
+        // A monitor being unplugged/replugged can leave the popup positioned on a display
+        // arrangement that no longer exists, with no other way to dismiss it. Just close it.
+        NotificationCenter.default.addObserver(forName: NSApplication.didChangeScreenParametersNotification, object: nil, queue: .main) { [weak self] _ in
+            self?.closePopup()
         }
     }
 
@@ -67,7 +75,7 @@ class StatusBarController: NSObject {
         }
 
         if let p = popup, p.isVisible {
-            p.orderOut(nil)
+            closePopup()
             return
         }
 
@@ -101,6 +109,33 @@ class StatusBarController: NSObject {
 
         popup?.setFrameTopLeftPoint(NSPoint(x: x, y: y))
         popup?.orderFrontRegardless()
+
+        // Global monitor catches clicks in other apps; local monitor catches clicks in our own
+        // other windows (e.g. Settings), so any click outside the popup itself dismisses it.
+        outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
+            self?.closePopup()
+        }
+        localClickMonitor = NSEvent.addLocalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] event in
+            guard let self else { return event }
+            // Ignore clicks on the popup itself and on the status item button — the button's own
+            // action already handles toggling, and closing here first would make it re-open.
+            if event.window !== self.popup && event.window !== self.statusItem.button?.window {
+                self.closePopup()
+            }
+            return event
+        }
+    }
+
+    private func closePopup() {
+        popup?.orderOut(nil)
+        if let monitor = outsideClickMonitor {
+            NSEvent.removeMonitor(monitor)
+            outsideClickMonitor = nil
+        }
+        if let monitor = localClickMonitor {
+            NSEvent.removeMonitor(monitor)
+            localClickMonitor = nil
+        }
     }
 
     private func showContextMenu() {

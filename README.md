@@ -1,4 +1,4 @@
-# AsanaStatus (v2.0.0)
+# AsanaStatus (v2.0.1)
 
 ![AsanaStatus menu bar icon and popup showing 18.6h of 40h goal, the This Week / Today toggle, and a breakdown of tasks](asana_status_cover.jpg)
 
@@ -66,6 +66,9 @@ Your Personal Access Token is stored in the macOS Keychain. Everything else (goa
 AsanaStatus sends a macOS notification the moment you hit your weekly hours goal.
 
 ## Changelog
+
+### 2.0.1 — Popup could get stuck open
+If a display got connected or disconnected while the popup was open (docking/undocking a laptop, unplugging a monitor), it could end up stuck open with no way to close it. Now any screen change closes it automatically, and clicking anywhere outside the popup closes it too, not just clicking the menu bar icon again.
 
 ### 2.0.0 — Today vs. This Week
 Added a toggle at the top of the popup to flip between **This Week** and **Today**. It's instant since it reuses the data from your last refresh instead of hitting Asana again.
