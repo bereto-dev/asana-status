@@ -77,7 +77,10 @@ enum L {
     static var weekdayNames: [String] { es ? weekdayNamesEs : weekdayNamesEn }
 
     // MARK: Popup
+    static var thisWeekTab: String { es ? "Esta semana" : "This Week" }
+    static var todayTab: String { es ? "Hoy" : "Today" }
     static var thisWeekHeader: String { es ? "ESTA SEMANA" : "THIS WEEK" }
+    static var todayHeader: String { es ? "HOY" : "TODAY" }
     static func ofGoal(_ hours: Double, percent: Int) -> String {
         es ? String(format: "de %.0fh (%d%%)", hours, percent) : String(format: "of %.0fh (%d%%)", hours, percent)
     }
@@ -91,6 +94,7 @@ enum L {
            : String(format: "%.1fh behind pace.", hours)
     }
     static var tasksHeader: String { es ? "TAREAS CON TIEMPO ESTA SEMANA" : "TASKS WITH TIME THIS WEEK" }
+    static var tasksHeaderToday: String { es ? "TAREAS CON TIEMPO HOY" : "TASKS WITH TIME TODAY" }
     static var noTimeLoggedYet: String { es ? "Sin tiempo registrado aún" : "No time logged yet" }
     static func updatedAt(_ time: String) -> String { es ? "Actualizado \(time)" : "Updated \(time)" }
     static var updatingNow: String { es ? "Actualizando…" : "Updating…" }

@@ -5,6 +5,7 @@ private let PAD:     CGFloat = 12
 
 class PopupPanel: NSPanel {
 
+    private let periodControl = NSSegmentedControl()
     private let headerLabel  = label("", size: 9, weight: .semibold, alpha: 0.45)
     private let hoursLabel   = label("—",  size: 26, weight: .bold, alpha: 1)
     private let goalLabel    = label("",   size: 11, weight: .regular, alpha: 0.5)
@@ -19,6 +20,7 @@ class PopupPanel: NSPanel {
     private var card: CardView!
 
     var onRefreshRequested: (() -> Void)?
+    var onPeriodChanged: ((StatsPeriod) -> Void)?
 
     convenience init() {
         self.init(
@@ -51,6 +53,18 @@ class PopupPanel: NSPanel {
             card.bottomAnchor.constraint(equalTo: root.bottomAnchor, constant: -6),
         ])
 
+        // Force a dark appearance on this control regardless of the system-wide appearance,
+        // since the rest of the card is hand-drawn dark and never adapts to Light Mode.
+        periodControl.appearance = NSAppearance(named: .darkAqua)
+        periodControl.segmentCount = 2
+        periodControl.segmentStyle = .texturedRounded
+        periodControl.segmentDistribution = .fillEqually
+        periodControl.selectedSegment = 0
+        periodControl.target = self
+        periodControl.action = #selector(periodChanged)
+        periodControl.translatesAutoresizingMaskIntoConstraints = false
+        periodControl.heightAnchor.constraint(equalToConstant: 22).isActive = true
+
         let hoursRow = hstack([hoursLabel, goalLabel], spacing: 6, align: .lastBaseline)
 
         progressBar.translatesAutoresizingMaskIntoConstraints = false
@@ -75,6 +89,7 @@ class PopupPanel: NSPanel {
         let updatedRow = hstack([refreshButton, updatedLabel], spacing: 5, align: .centerY)
 
         rootStack = NSStackView(views: [
+            periodControl,
             headerLabel,
             hoursRow,
             progressBar,
@@ -90,6 +105,7 @@ class PopupPanel: NSPanel {
         rootStack.spacing     = 6
         rootStack.edgeInsets  = NSEdgeInsets(top: PAD, left: PAD, bottom: PAD, right: PAD)
         rootStack.translatesAutoresizingMaskIntoConstraints = false
+        rootStack.setCustomSpacing(10, after: periodControl)
 
         card.addSubview(rootStack)
         NSLayoutConstraint.activate([
@@ -98,21 +114,20 @@ class PopupPanel: NSPanel {
             rootStack.trailingAnchor.constraint(equalTo: card.trailingAnchor),
             rootStack.bottomAnchor.constraint(equalTo: card.bottomAnchor),
             progressBar.widthAnchor.constraint(equalTo: rootStack.widthAnchor, constant: -PAD * 2),
+            periodControl.widthAnchor.constraint(equalTo: rootStack.widthAnchor, constant: -PAD * 2),
         ])
     }
 
-    func showLoading() {
-        headerLabel.stringValue = L.thisWeekHeader
-        tasksHeader.stringValue = L.tasksHeader
+    func showLoading(period: StatsPeriod) {
+        applyHeader(for: period)
         hoursLabel.stringValue = "…"
         paceLabel.textColor    = NSColor.white.withAlphaComponent(0.8)
         paceLabel.stringValue  = L.updatingNow
         resize()
     }
 
-    func showError(_ message: String) {
-        headerLabel.stringValue = L.thisWeekHeader
-        tasksHeader.stringValue = L.tasksHeader
+    func showError(_ message: String, period: StatsPeriod) {
+        applyHeader(for: period)
         hoursLabel.stringValue = "⚠︎"
         goalLabel.stringValue  = ""
         paceLabel.stringValue  = message
@@ -121,10 +136,10 @@ class PopupPanel: NSPanel {
         resize()
     }
 
-    func update(_ summary: WeeklySummary, goalHours: Double) {
-        headerLabel.stringValue = L.thisWeekHeader
-        tasksHeader.stringValue = L.tasksHeader
+    func update(_ summary: PeriodSummary, period: StatsPeriod) {
+        applyHeader(for: period)
 
+        let goalHours = Double(summary.goalMinutes) / 60
         hoursLabel.stringValue = String(format: "%.1fh", summary.totalHours)
         let percent = Int((summary.totalHours / max(goalHours, 1) * 100).rounded())
         goalLabel.stringValue  = L.ofGoal(goalHours, percent: percent)
@@ -159,6 +174,18 @@ class PopupPanel: NSPanel {
         updatedLabel.stringValue = L.updatedAt(fmt.string(from: summary.generatedAt))
 
         resize()
+    }
+
+    private func applyHeader(for period: StatsPeriod) {
+        periodControl.setLabel(L.thisWeekTab, forSegment: 0)
+        periodControl.setLabel(L.todayTab, forSegment: 1)
+        periodControl.selectedSegment = period == .week ? 0 : 1
+        headerLabel.stringValue = period == .week ? L.thisWeekHeader : L.todayHeader
+        tasksHeader.stringValue = period == .week ? L.tasksHeader : L.tasksHeaderToday
+    }
+
+    @objc private func periodChanged() {
+        onPeriodChanged?(periodControl.selectedSegment == 0 ? .week : .today)
     }
 
     @objc private func refreshTapped() {

@@ -10,8 +10,9 @@ class StatusBarController: NSObject {
     private var aboutWin:  AboutWindow?
     private var isRefreshing = false
     private var notifiedGoalThisWeek = false
-    private var lastSummary: WeeklySummary?
+    private var lastSummaries: PeriodSummaries?
     private var lastErrorMessage: String?
+    private var selectedPeriod: StatsPeriod = .week
 
     override init() {
         super.init()
@@ -46,12 +47,12 @@ class StatusBarController: NSObject {
     }
 
     private func renderCachedStateIntoPopup() {
-        if let summary = lastSummary {
-            popup?.update(summary, goalHours: goalHours)
+        if let summaries = lastSummaries {
+            popup?.update(summaries.summary(for: selectedPeriod), period: selectedPeriod)
         } else if let message = lastErrorMessage {
-            popup?.showError(message)
+            popup?.showError(message, period: selectedPeriod)
         } else {
-            popup?.showLoading()
+            popup?.showLoading(period: selectedPeriod)
         }
     }
 
@@ -76,6 +77,11 @@ class StatusBarController: NSObject {
         if popup == nil {
             popup = PopupPanel()
             popup?.onRefreshRequested = { [weak self] in self?.refresh() }
+            popup?.onPeriodChanged = { [weak self] period in
+                guard let self else { return }
+                self.selectedPeriod = period
+                self.renderCachedStateIntoPopup()
+            }
         }
 
         let btnFrame = btn.window!.convertToScreen(btn.frame)
@@ -152,7 +158,7 @@ class StatusBarController: NSObject {
         )
         goalHours = creds.weeklyGoalHours
         notifiedGoalThisWeek = false
-        lastSummary = nil
+        lastSummaries = nil
         lastErrorMessage = nil
         refresh()
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
@@ -163,19 +169,22 @@ class StatusBarController: NSObject {
     private func refresh() {
         guard let service, !isRefreshing else { return }
         isRefreshing = true
-        if popup?.isVisible == true { popup?.showLoading() }
+        if popup?.isVisible == true { popup?.showLoading(period: selectedPeriod) }
 
         Task {
             do {
-                let summary = try await service.fetchWeeklySummary()
+                let summaries = try await service.fetchSummaries()
                 await MainActor.run {
-                    self.lastSummary = summary
+                    self.lastSummaries = summaries
                     self.lastErrorMessage = nil
-                    self.statusItem.button?.title = "\(String(format: "%.1f", summary.totalHours))/\(String(format: "%.0f", self.goalHours))h"
-                    if self.popup?.isVisible == true { self.popup?.update(summary, goalHours: self.goalHours) }
+                    let week = summaries.week
+                    self.statusItem.button?.title = "\(String(format: "%.1f", week.totalHours))/\(String(format: "%.0f", self.goalHours))h"
+                    if self.popup?.isVisible == true {
+                        self.popup?.update(summaries.summary(for: self.selectedPeriod), period: self.selectedPeriod)
+                    }
                     self.isRefreshing = false
 
-                    if summary.totalHours >= self.goalHours && !self.notifiedGoalThisWeek {
+                    if week.totalHours >= self.goalHours && !self.notifiedGoalThisWeek {
                         self.notifiedGoalThisWeek = true
                         Notifier.send(title: "AsanaStatus", body: L.goalReachedNotification(self.goalHours))
                     }
@@ -184,7 +193,7 @@ class StatusBarController: NSObject {
                 await MainActor.run {
                     self.lastErrorMessage = error.localizedDescription
                     self.statusItem.button?.title = "⚠︎"
-                    if self.popup?.isVisible == true { self.popup?.showError(error.localizedDescription) }
+                    if self.popup?.isVisible == true { self.popup?.showError(error.localizedDescription, period: self.selectedPeriod) }
                     self.isRefreshing = false
                 }
             }

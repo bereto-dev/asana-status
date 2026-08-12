@@ -1,4 +1,4 @@
-# AsanaStatus (v1.2.0)
+# AsanaStatus (v2.0.0)
 
 A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed.
 
@@ -7,9 +7,10 @@ A lightweight macOS menu bar app that shows how many hours you've logged in Asan
 **Menu bar:** `⏱ 22.4/40h`
 
 **Popup:**
-- Hours logged this week + % of your weekly goal
-- Pace indicator (ahead of / behind your weekly goal)
-- Breakdown of tasks with time logged this week, most recent first
+- Toggle between **This Week** and **Today**
+- Hours logged + % of your goal for whichever period is selected
+- Pace indicator (ahead of / behind)
+- Breakdown of tasks with time logged, most recent first
 - Manual refresh button
 
 ![AsanaStatus popup showing 37.8h of 40h goal, 2.2h behind pace, and a breakdown of tasks](screenshot.jpg)
@@ -63,6 +64,30 @@ Your Personal Access Token is stored in the macOS Keychain. Everything else (goa
 ## Notifications
 
 AsanaStatus sends a macOS notification the moment you hit your weekly hours goal.
+
+## Changelog
+
+### 2.0.0 — Today vs. This Week
+Added a toggle at the top of the popup to flip between **This Week** and **Today**. It's instant since it reuses the data from your last refresh instead of hitting Asana again.
+
+### 1.2.0 — New look
+The menu bar and app icon now use a clock symbol on a red gradient instead of a placeholder emoji.
+
+### 1.1.2 — Tighter popup
+The popup used to leave an oddly big gap under the menu bar icon. It now sits right where you'd expect.
+
+### 1.1.1 — Fixed rate limit errors
+Weeks with a lot of touched tasks could trip Asana's rate limits and show an error. Fixed by fetching data in smaller batches instead of all at once, with an automatic retry as a backup. Also added a "Check for Updates" menu item that opens this repo.
+
+### 1.1.0 — Configurable work week, real app icon, clearer wording
+- Added a proper app icon
+- You can now set how many days a week you actually work, since not everyone runs Monday–Friday, and the pace math adjusts to match
+- Reworded the pace message so it's clearly about your rhythm, not a confusing comparison against the full weekly goal
+- Added Support links (Buy Me a Coffee, devteam.partners) to the About window
+- The app version now shows in About, so you can tell at a glance if you're up to date
+
+### 1.0.0 — First release
+The original release: hours logged this week vs. your goal, right in the menu bar, no need to open Asana. It also shipped with the fix that makes the numbers actually accurate — Asana counts time logged on tasks assigned to someone else, or to no one, not just tasks assigned to you, so the app searches both instead of only "my tasks."
 
 ## Origin
 
