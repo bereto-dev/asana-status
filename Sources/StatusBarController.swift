@@ -17,7 +17,9 @@ class StatusBarController: NSObject {
         super.init()
 
         if let btn = statusItem.button {
-            btn.title  = "⏱ —"
+            btn.image = Self.statusBarIcon()
+            btn.imagePosition = .imageLeft
+            btn.title  = "—"
             btn.action = #selector(togglePopup)
             btn.target = self
             btn.sendAction(on: [.leftMouseUp, .rightMouseUp])
@@ -33,6 +35,14 @@ class StatusBarController: NSObject {
             self?.aboutWin = nil
             self?.renderCachedStateIntoPopup()
         }
+    }
+
+    private static func statusBarIcon() -> NSImage? {
+        let config = NSImage.SymbolConfiguration(pointSize: 14, weight: .regular)
+        let image = NSImage(systemSymbolName: "deskclock", accessibilityDescription: "AsanaStatus")?
+            .withSymbolConfiguration(config)
+        image?.isTemplate = true
+        return image
     }
 
     private func renderCachedStateIntoPopup() {
@@ -161,7 +171,7 @@ class StatusBarController: NSObject {
                 await MainActor.run {
                     self.lastSummary = summary
                     self.lastErrorMessage = nil
-                    self.statusItem.button?.title = "⏱ \(String(format: "%.1f", summary.totalHours))/\(String(format: "%.0f", self.goalHours))h"
+                    self.statusItem.button?.title = "\(String(format: "%.1f", summary.totalHours))/\(String(format: "%.0f", self.goalHours))h"
                     if self.popup?.isVisible == true { self.popup?.update(summary, goalHours: self.goalHours) }
                     self.isRefreshing = false
 
@@ -173,7 +183,7 @@ class StatusBarController: NSObject {
             } catch {
                 await MainActor.run {
                     self.lastErrorMessage = error.localizedDescription
-                    self.statusItem.button?.title = "⏱ ⚠︎"
+                    self.statusItem.button?.title = "⚠︎"
                     if self.popup?.isVisible == true { self.popup?.showError(error.localizedDescription) }
                     self.isRefreshing = false
                 }
