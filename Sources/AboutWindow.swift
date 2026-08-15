@@ -36,6 +36,7 @@ class AboutWindow: NSWindow {
         originBody.textColor = .secondaryLabelColor
 
         let supportHeader = sectionHeader(L.supportHeader)
+        let updatesBtn = linkButton(title: L.checkForUpdatesLink, url: "https://bereto.gumroad.com/l/asana-status")
         let coffeeBtn = linkButton(title: "☕  Buy Me a Coffee", url: "https://buymeacoffee.com/bereto")
         let devBtn    = linkButton(title: "🌐  devteam.partners", url: "https://devteam.partners/about-us")
 
@@ -44,7 +45,7 @@ class AboutWindow: NSWindow {
             div(),
             originHeader, originBody,
             div(),
-            supportHeader, coffeeBtn, devBtn,
+            supportHeader, updatesBtn, coffeeBtn, devBtn,
         ])
         stack.orientation = .vertical
         stack.alignment   = .leading

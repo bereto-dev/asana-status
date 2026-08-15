@@ -1,10 +1,10 @@
-# AsanaStatus (v2.0.2)
+# AsanaStatus (v2.0.3)
+
+A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed. Ships as a universal binary for Intel and Apple Silicon.
 
 ![AsanaStatus menu bar icon and popup showing 18.6h of 40h goal, the This Week / Today toggle, and a breakdown of tasks](asana_status_cover.jpg)
 
-A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed.
-
-> Running an older version? Compare the number above to the one under **About AsanaStatus** in the app (right-click the menu bar icon), then re-download `AsanaStatus.app` from this repo if you're behind.
+> Running an older version? Compare the number above to the one under **About AsanaStatus** in the app (right-click the menu bar icon), then re-download from [Gumroad](https://bereto.gumroad.com/l/asana-status) if you're behind.
 
 **Menu bar:** `⏱ 22.4/40h`
 
@@ -21,14 +21,17 @@ Asana's own per-user "time logged" total includes every task you tracked time on
 
 ## Requirements
 
-- macOS 13 or later, Intel or Apple Silicon (the download is a universal binary)
-- Xcode Command Line Tools (`xcode-select --install`)
+- macOS 13 or later
+- Intel or Apple Silicon Mac
 - An [Asana Personal Access Token](https://app.asana.com/0/developer-console) (Developer Console → Personal access tokens)
 - A workspace with Advanced Search enabled (Asana Premium/Business/Enterprise) — required for the task search this app relies on
+- Xcode Command Line Tools (`xcode-select --install`) to build from source
 
 ## Download & run (no build required)
 
-1. Download `AsanaStatus.app` from this repo
+Get `AsanaStatus.app` from [Gumroad](https://bereto.gumroad.com/l/asana-status).
+
+1. Download the app
 2. Move it to your `/Applications` folder
 3. Right-click → **Open** → **Open** (required once to bypass Gatekeeper on unsigned apps)
 4. Paste your Asana Personal Access Token in the setup window
@@ -44,7 +47,7 @@ open AsanaStatus.app
 
 ## Settings
 
-Right-click the menu bar icon → **Settings…**
+Right-click the menu bar icon → **Check for Updates…** / **Settings…** / **About AsanaStatus** / **Quit AsanaStatus**.
 
 - **Personal Access Token** — from the Asana Developer Console
 - **Workspace GID** — optional, auto-detected if your account has only one workspace
@@ -66,6 +69,9 @@ Your Personal Access Token is stored in the macOS Keychain. Everything else (goa
 AsanaStatus sends a macOS notification the moment you hit your weekly hours goal.
 
 ## Changelog
+
+### 2.0.3 — Downloads on Gumroad
+The app now lives on [Gumroad](https://bereto.gumroad.com/l/asana-status). Check for Updates opens the product page there, and GitHub is just for source if you want to build it yourself.
 
 ### 2.0.2 — Intel Macs too
 The downloadable app was Apple Silicon only, so it would not open on Intel Macs. It is now a universal build that runs on both Intel and Apple Silicon (still macOS 13 or later).
@@ -109,4 +115,4 @@ Built by [devteam.partners](https://devteam.partners/about-us) 🌐
 
 ---
 
-Built with Swift + AppKit. No external dependencies.
+Built with Swift + AppKit. Universal binary (x86_64 + arm64). No external dependencies.

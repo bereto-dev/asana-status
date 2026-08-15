@@ -104,6 +104,7 @@ enum L {
     static var settingsMenu: String { es ? "Configuración…" : "Settings…" }
     static var aboutMenu: String { es ? "Acerca de AsanaStatus" : "About AsanaStatus" }
     static var checkForUpdatesMenu: String { es ? "Buscar actualizaciones…" : "Check for Updates…" }
+    static var checkForUpdatesLink: String { es ? "🔄  Buscar actualizaciones" : "🔄  Check for Updates" }
     static var quitMenu: String { es ? "Salir de AsanaStatus" : "Quit AsanaStatus" }
     static func goalReachedNotification(_ hours: Double) -> String {
         let h = String(format: "%.0f", hours)
