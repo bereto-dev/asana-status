@@ -47,9 +47,9 @@ enum AsanaAPIError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidToken: return "Token inválido o expirado."
-        case .http(let code, let msg): return "Error de Asana (\(code)): \(msg)"
-        case .decoding: return "Respuesta inesperada de Asana."
+        case .invalidToken: return L.invalidTokenError
+        case .http(let code, let msg): return L.asanaHttpError(code, msg)
+        case .decoding: return L.unexpectedResponseError
         }
     }
 }

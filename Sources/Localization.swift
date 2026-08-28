@@ -124,4 +124,11 @@ enum L {
     }
     static var supportHeader: String { es ? "Soporte" : "Support" }
     static func versionLabel(_ version: String) -> String { es ? "Versión \(version)" : "Version \(version)" }
+
+    // MARK: Asana API errors
+    static var invalidTokenError: String { es ? "Token inválido o expirado." : "Invalid or expired token." }
+    static func asanaHttpError(_ code: Int, _ message: String) -> String {
+        es ? "Error de Asana (\(code)): \(message)" : "Asana error (\(code)): \(message)"
+    }
+    static var unexpectedResponseError: String { es ? "Respuesta inesperada de Asana." : "Unexpected response from Asana." }
 }

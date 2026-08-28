@@ -1,4 +1,4 @@
-# AsanaStatus (v2.0.3)
+# AsanaStatus (v2.0.4)
 
 A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed. Ships as a universal binary for Intel and Apple Silicon.
 
@@ -69,6 +69,9 @@ Your Personal Access Token is stored in the macOS Keychain. Everything else (goa
 AsanaStatus sends a macOS notification the moment you hit your weekly hours goal.
 
 ## Changelog
+
+### 2.0.4 — Weekly notification fix, cheaper background refresh, English error messages
+Fixed a bug where the "you hit your goal" notification only ever fired once for the life of the app instead of once per week, if you leave AsanaStatus running for several weeks straight. The background refresh is now every 5 minutes instead of every 1, which is gentler on Asana's rate limits, and the popup refreshes itself the moment you open it if the last check was more than 30 seconds ago, so it never feels stale. Also fixed a few error messages (like an invalid token) that always showed in Spanish no matter which language you had selected.
 
 ### 2.0.3 — Downloads on Gumroad
 The app now lives on [Gumroad](https://bereto.gumroad.com/l/asana-status). Check for Updates opens the product page there, and GitHub is just for source if you want to build it yourself.

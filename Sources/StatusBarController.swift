@@ -15,6 +15,12 @@ class StatusBarController: NSObject {
     private var selectedPeriod: StatsPeriod = .week
     private var outsideClickMonitor: Any?
     private var localClickMonitor: Any?
+    private var firstWeekday = 2
+    private var currentWeekStart: Date?
+    private var lastRefreshAt: Date?
+    /// Popups opened within this many seconds of the last refresh reuse cached data instead of
+    /// triggering a new fetch — avoids hammering the API if the user toggles the popup rapidly.
+    private static let popupRefreshDebounce: TimeInterval = 30
 
     override init() {
         super.init()
@@ -110,6 +116,13 @@ class StatusBarController: NSObject {
         popup?.setFrameTopLeftPoint(NSPoint(x: x, y: y))
         popup?.orderFrontRegardless()
 
+        // Background polling is spaced out to save API calls, so opening the popup after a
+        // while should feel current rather than showing minutes-old data. Skip it if we just
+        // refreshed (e.g. the user is toggling the popup open/closed) to avoid extra requests.
+        if lastRefreshAt == nil || Date().timeIntervalSince(lastRefreshAt!) > Self.popupRefreshDebounce {
+            refresh()
+        }
+
         // Global monitor catches clicks in other apps; local monitor catches clicks in our own
         // other windows (e.g. Settings), so any click outside the popup itself dismisses it.
         outsideClickMonitor = NSEvent.addGlobalMonitorForEvents(matching: [.leftMouseDown, .rightMouseDown]) { [weak self] _ in
@@ -192,11 +205,17 @@ class StatusBarController: NSObject {
             workDaysPerWeek: creds.workDaysPerWeek
         )
         goalHours = creds.weeklyGoalHours
+        firstWeekday = creds.firstWeekday
+        currentWeekStart = nil
         notifiedGoalThisWeek = false
         lastSummaries = nil
         lastErrorMessage = nil
         refresh()
-        timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true) { [weak self] _ in
+        // 5 minutes, not 1: this is a hours-logged tracker, not a live feed — nobody needs
+        // second-level freshness, and every tick fans out into a search call plus one time-entry
+        // call per touched task, which is what tripped Asana's rate limit before. Opening the
+        // popup still forces an immediate refresh (see togglePopup) so it never feels stale.
+        timer = Timer.scheduledTimer(withTimeInterval: 300, repeats: true) { [weak self] _ in
             self?.refresh()
         }
     }
@@ -204,6 +223,17 @@ class StatusBarController: NSObject {
     private func refresh() {
         guard let service, !isRefreshing else { return }
         isRefreshing = true
+        lastRefreshAt = Date()
+
+        // The "goal reached" notification should fire once per week, not once ever. Detect a
+        // week boundary crossing (the app is meant to stay running for weeks at a time) and
+        // reset the flag so a new week can notify again.
+        let weekStart = WeekCalculator.startOfWeek(firstWeekday: firstWeekday)
+        if let lastWeekStart = currentWeekStart, lastWeekStart != weekStart {
+            notifiedGoalThisWeek = false
+        }
+        currentWeekStart = weekStart
+
         if popup?.isVisible == true { popup?.showLoading(period: selectedPeriod) }
 
         Task {
