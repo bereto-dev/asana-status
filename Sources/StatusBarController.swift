@@ -168,7 +168,7 @@ class StatusBarController: NSObject {
         about.target = self
         menu.addItem(about)
 
-        let checkForUpdates = NSMenuItem(title: L.checkForUpdatesMenu, action: #selector(openUpdates), keyEquivalent: "")
+        let checkForUpdates = NSMenuItem(title: L.checkForUpdatesMenu, action: #selector(checkForUpdates), keyEquivalent: "")
         checkForUpdates.target = self
         menu.addItem(checkForUpdates)
 
@@ -183,8 +183,8 @@ class StatusBarController: NSObject {
         refresh()
     }
 
-    @objc private func openUpdates() {
-        NSWorkspace.shared.open(URL(string: "https://bereto.gumroad.com/l/asana-status")!)
+    @objc private func checkForUpdates() {
+        MainActor.assumeIsolated { Updater.shared.checkForUpdates() }
     }
 
     @objc private func showAbout() {

@@ -55,6 +55,8 @@ enum L {
         return n == 1 ? "1 day" : "\(n) days"
     }
     static var languageLabel: String { es ? "Idioma" : "Language" }
+    static var updatesLabel: String { es ? "Actualizaciones" : "Updates" }
+    static var autoUpdatesCheckbox: String { es ? "Buscar actualizaciones automáticamente" : "Check for updates automatically" }
     static var saveButton: String { es ? "Guardar y Conectar" : "Save & Connect" }
     static var generateTokenLink: String { es ? "Generar un token →" : "Generate a token →" }
 

@@ -1,3 +1,6 @@
 .DS_Store
 AGENTS.md
 AsanaStatus.app/
+vendor/
+dist/
+brag-output*/

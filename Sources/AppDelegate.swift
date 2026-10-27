@@ -9,6 +9,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
         buildAppMenu()
         controller = StatusBarController()
+        Updater.shared.start()
+        // Debug: `AsanaStatus --check-for-updates` runs a user-initiated update check right away.
+        if CommandLine.arguments.contains("--check-for-updates") {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { Updater.shared.checkForUpdates() }
+        }
     }
 
     private func buildAppMenu() {

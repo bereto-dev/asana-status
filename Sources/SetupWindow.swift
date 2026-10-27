@@ -11,6 +11,7 @@ class SetupWindow: NSWindow {
     private let weekdayPopup    = NSPopUpButton()
     private let workDaysPopup   = NSPopUpButton()
     private let languagePopup   = NSPopUpButton()
+    private let updatesCheck    = NSButton(checkboxWithTitle: "", target: nil, action: nil)
     private let statusLabel     = NSTextField(wrappingLabelWithString: "")
     private let saveBtn         = NSButton()
     private let helpBtn         = NSButton()
@@ -22,6 +23,7 @@ class SetupWindow: NSWindow {
     private let weekStartLabelField = NSTextField(labelWithString: "")
     private let workDaysLabelField  = NSTextField(labelWithString: "")
     private let languageLabelField  = NSTextField(labelWithString: "")
+    private let updatesLabelField   = NSTextField(labelWithString: "")
 
     private var stack: NSStackView!
 
@@ -54,9 +56,14 @@ class SetupWindow: NSWindow {
         workspaceField.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
         goalField.font = .systemFont(ofSize: 12)
 
-        for f in [tokenLabelField, workspaceLabelField, goalLabelField, weekStartLabelField, workDaysLabelField, languageLabelField] {
+        for f in [tokenLabelField, workspaceLabelField, goalLabelField, weekStartLabelField, workDaysLabelField, languageLabelField, updatesLabelField] {
             f.font = .systemFont(ofSize: 13)
         }
+
+        // Applies immediately, independent of Save & Connect (it doesn't touch the Asana token).
+        updatesCheck.font = .systemFont(ofSize: 12)
+        updatesCheck.target = self
+        updatesCheck.action = #selector(toggleUpdates)
 
         weekdayPopup.target = self
         workDaysPopup.target = self
@@ -102,6 +109,7 @@ class SetupWindow: NSWindow {
             weekStartLabelField, weekdayPopup,
             workDaysLabelField, workDaysPopup,
             languageLabelField, languagePopup,
+            updatesLabelField, updatesCheck,
             statusLabel, saveBtn,
         ])
         stack.orientation = .vertical
@@ -151,6 +159,9 @@ class SetupWindow: NSWindow {
         weekStartLabelField.stringValue = L.weekStartLabel
         workDaysLabelField.stringValue = L.workDaysLabel
         languageLabelField.stringValue = L.languageLabel
+        updatesLabelField.stringValue = L.updatesLabel
+        updatesCheck.title = L.autoUpdatesCheckbox
+        updatesCheck.state = MainActor.assumeIsolated { Updater.shared.automaticallyChecks } ? .on : .off
         saveBtn.title = L.saveButton
         helpBtn.title = L.generateTokenLink
         statusLabel.textColor = .systemRed
@@ -178,6 +189,11 @@ class SetupWindow: NSWindow {
         contentView?.layoutSubtreeIfNeeded()
         let fit = stack.fittingSize
         setContentSize(NSSize(width: 420, height: fit.height))
+    }
+
+    @objc private func toggleUpdates() {
+        let on = updatesCheck.state == .on
+        MainActor.assumeIsolated { Updater.shared.automaticallyChecks = on }
     }
 
     @objc private func languageChanged() {

@@ -1,10 +1,10 @@
-# AsanaStatus (v2.0.4)
+# AsanaStatus (v2.1.0)
 
 A lightweight macOS menu bar app that shows how many hours you've logged in Asana this week against your weekly goal — no browser tab needed. Ships as a universal binary for Intel and Apple Silicon.
 
 ![AsanaStatus menu bar icon and popup showing 18.6h of 40h goal, the This Week / Today toggle, and a breakdown of tasks](asana_status_cover.jpg)
 
-> Running an older version? Compare the number above to the one under **About AsanaStatus** in the app (right-click the menu bar icon), then re-download from [Gumroad](https://bereto.gumroad.com/l/asana-status) if you're behind.
+> Running an older version? From 2.1.0 on, AsanaStatus updates itself: right-click the menu bar icon → **Check for Updates…**. On 2.0.4 or earlier, re-download it once from [Gumroad](https://bereto.gumroad.com/l/asana-status).
 
 **Menu bar:** `⏱ 22.4/40h`
 
@@ -14,6 +14,8 @@ A lightweight macOS menu bar app that shows how many hours you've logged in Asan
 - Pace indicator (ahead of / behind)
 - Breakdown of tasks with time logged, most recent first
 - Manual refresh button
+
+**Updates:** checks once a day and asks before installing. Every update is signed and verified before it's applied.
 
 ## How it works
 
@@ -55,6 +57,7 @@ Right-click the menu bar icon → **Check for Updates…** / **Settings…** / *
 - **Week resets on** — which day starts your work week
 - **Work days per week** — default 5, used to figure out your expected pace (e.g. set it to 4 or 6 if your goal isn't spread Monday to Friday)
 - **Language** — English (default) or Español
+- **Updates** — check for updates automatically (on by default)
 
 ## First launch security
 
@@ -69,6 +72,9 @@ Your Personal Access Token is stored in the macOS Keychain. Everything else (goa
 AsanaStatus sends a macOS notification the moment you hit your weekly hours goal.
 
 ## Changelog
+
+### 2.1.0 — Automatic updates
+AsanaStatus now updates itself. Once a day it checks for a new version and, if there is one, shows you what's new with an Install and Relaunch button. You can also check any time from the right-click menu (Check for Updates…), and turn the daily check off in Settings. Updates are signed, so the app only installs versions that really come from me.
 
 ### 2.0.4 — Weekly notification fix, cheaper background refresh, English error messages
 Fixed a bug where the "you hit your goal" notification only ever fired once for the life of the app instead of once per week, if you leave AsanaStatus running for several weeks straight. The background refresh is now every 5 minutes instead of every 1, which is gentler on Asana's rate limits, and the popup refreshes itself the moment you open it if the last check was more than 30 seconds ago, so it never feels stale. Also fixed a few error messages (like an invalid token) that always showed in Spanish no matter which language you had selected.
@@ -118,4 +124,4 @@ Built by [devteam.partners](https://devteam.partners/about-us) 🌐
 
 ---
 
-Built with Swift + AppKit. Universal binary (x86_64 + arm64). No external dependencies.
+Built with Swift + AppKit. Universal binary (x86_64 + arm64). The only dependency is [Sparkle](https://sparkle-project.org) for updates, fetched at build time.
